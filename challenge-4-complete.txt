@@ -1,0 +1,27 @@
+  const handleAddClick = () => {
+    if (categoria.trim()) {
+      onAddcategoria(categoria.trim());
+      setCategoria('');
+    }
+  };
+
+  return (
+    <div >
+      <h2 >Añadir Nueva categoria</h2>
+      <div>
+        <input
+          type="texto"
+          value={categoria}
+          onChange={(e) => setCategoria(e.target.value)}
+          placeholder="nombre categoria"
+          "
+        />
+        <button
+          onClick={handleAddClick}
+    
+        >
+          Add categoria
+        </button>
+      </div>
+    </div>
+  );
