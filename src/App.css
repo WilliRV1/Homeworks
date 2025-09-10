@@ -1,0 +1,31 @@
+
+body {
+  
+  background-color: #000000;
+  color: #ffffff;
+
+}
+.controles {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  padding-bottom: 5%;
+
+}
+
+
+button {
+  padding: 10px 15px;
+}
+
+h3 {
+  margin-top: 0;
+  color: #ffffff;
+}
+
+
+.lista {
+  display: grid;
+  grid-template-columns: repeat(auto-fill , minmax(200px, 1fr));
+
+}
