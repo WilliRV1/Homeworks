@@ -1,58 +1,38 @@
-import { useState } from 'react';
-import ListaImagenes from './ListaImagenes';
-import FormularioImagen from './Formulario';
-import Filtro from './Filtro';
-import './App.css';
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { onAuthStateChanged } from 'firebase/auth';
+import { auth } from './firebase/config';
+import { login, logout } from './store/auth/authSlice';
+import { startLoadingData } from './store/social/thunks';
 
+import { LoginPage } from './LoginPage';
+import { SocialApp } from './SocialApp';
 
-const IMAGENES_INICIALES = [
-  { id: 10, title: 'FOTO 1', url: 'https://picsum.photos/id/10/200/300' },
-  { id: 25, title: 'FOTO 2', url: 'https://picsum.photos/id/25/200/300' },
-  { id: 30, title: 'FOTO 3', url: 'https://picsum.photos/id/30/200/300' },
-  { id: 914, title: 'FOTO 4', url: 'https://picsum.photos/id/914/200/300' },
-  { id: 1000, title: 'FOTO 5', url: 'https://picsum.photos/id/1000/200/300' },
-  { id: 500, title: 'FOTO 6', url: 'https://picsum.photos/id/500/200/300' },
-  { id: 320, title: 'FOTO 7', url: 'https://picsum.photos/id/320/200/300' },
-  
-];
+export const App = () => {
+    const { status } = useSelector(state => state.auth);
+    const dispatch = useDispatch();
 
-function App() {
+    useEffect(() => {
+        onAuthStateChanged(auth, async (user) => {
+            if (!user) {
+                dispatch(logout());
+                return;
+            };
+            
+            const { uid, email, displayName } = user;
+            dispatch(login({ uid, email, displayName: displayName || 'Usuario' }));
+            dispatch(startLoadingData());
+        });
+    }, [dispatch]);
 
-  const [imagenes, setImagenes] = useState(IMAGENES_INICIALES);
-  const [textoFiltro, setTextoFiltro] = useState('');
+    if (status === 'checking') {
+        return <h3 style={{ textAlign: 'center', fontFamily: 'Arial' }}>Validando credenciales...</h3>
+    }
 
- 
-  const agregarImagen = (titulo, id) => {
- 
-    
-    const nuevaImagen = {
-      id: id,
-      title: titulo,
-      url: `https://picsum.photos/id/${id}/200/300`,
-    };
-    
-    setImagenes([imagenes, nuevaImagen]);
-  };
-
-  
-  const imagenesFiltradas = imagenes.filter(imagen =>
-    imagen.title.includes(textoFiltro)
-  );
-
-  return (
-    <div >
-      <p>
-        <h1>Parcial 1 - William Reyes Valencia / 2215337</h1>
-      </p>
-      <main>
-        <div className="controles">
-          <FormularioImagen onAgregarImagen={agregarImagen} />
-          <Filtro setTextoFiltro={setTextoFiltro} />
-        </div>
-        <ListaImagenes imagenes={imagenesFiltradas} />
-      </main>
-    </div>
-  );
+    return (
+        <>
+            {status === 'authenticated' ? <SocialApp /> : <LoginPage />}
+        </>
+    );
 }
 
-export default App;
